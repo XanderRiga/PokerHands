@@ -1,3 +1,5 @@
+from enum import Enum
+
 class Card:
 	def __init__(self, rank, suit):
 		self.suit = suit  # suit is an int from 1-13
@@ -7,6 +9,19 @@ class Card:
 class Hand:
 	def __init__(self, cards):
 		self.cards = cards  # list of cards of type card
+
+
+class PokerHands(Enum):
+	RoyalFlush = 1
+	StraightFlush = 2
+	FourOfAKind = 3
+	FullHouse = 4
+	Flush = 5
+	Straight = 6
+	ThreeOfAKind = 7
+	TwoPair = 8
+	Pair = 9
+	HighCard = 10
 
 
 def pokerHand(hand):
@@ -23,10 +38,22 @@ def pokerHand(hand):
 			print('Using an illegal card value')
 			return
 
-	print('Contains Flush: ' + str(containsFlush(hand)))
-	print('Contains Straight: ' + str(containsStraight(hand)))
-	print('Best pairs: ' + str(getBestAlikeCardHand(hand)))
-	print('High Card: ' + str(getHighCard(hand).rank) + ' of ' + getHighCard(hand).suit)
+	if containsStraight(hand) and containsFlush(hand) and getHighCard(hand).rank == 1:
+		return PokerHands.RoyalFlush
+	elif containsStraight(hand) and containsFlush(hand):
+		return PokerHands.StraightFlush
+	elif getBestAlikeCardHand(hand) != None and getBestAlikeCardHand(hand)[0] == PokerHands.FourOfAKind:
+		return PokerHands.FourOfAKind
+	elif getBestAlikeCardHand(hand) != None and getBestAlikeCardHand(hand)[0] == PokerHands.FullHouse:
+		return PokerHands.FullHouse
+	elif containsFlush(hand):
+		return PokerHands.Flush
+	elif containsStraight(hand):
+		return PokerHands.Straight
+	elif getBestAlikeCardHand(hand) != None: # Handle 3 pair, 2 pair and 1 pair cases
+		return getBestAlikeCardHand(hand)[0]
+	else:
+		return PokerHands.HighCard
 
 def containsFlush(hand):
 	suit = hand.cards[0].suit
@@ -68,27 +95,28 @@ def getAlikeCards(hand):
 
 
 def getBestAlikeCardHand(hand):
+	"""Gives highest possible combination of pairs, returned as [pokerhand, list or singleton of values]"""
 	cardDict = getAlikeCards(hand)
 	if len(cardDict) == len(hand.cards):
 		return None # This means there are no pairs
 	if len(cardDict) == 2: # Full house or 4 of a kind
 		fours = getNumOfAKind(cardDict, 4)
-		if fours == None:
+		if fours != None:
+			return [PokerHands.FourOfAKind, fours]
+		else:
 			threes = getNumOfAKind(cardDict, 3)
 			twos = getNumOfAKind(cardDict, 2)
-			return 'Full House of 3: ' + str(threes) + ' and 2: ' + str(twos)
-		else:
-			return 'Four of a kind of ' + str(fours)
+			return [PokerHands.FullHouse, [threes, twos]]
 	if len(cardDict) == 3: # Two pair or 3 of a kind
 		threes = getNumOfAKind(cardDict, 3)
 		if threes != None:
-			return 'Three of a kind of ' + str(threes)
+			return [PokerHands.ThreeOfAKind, threes]
 		else:
 			twos = getNumOfAKind(cardDict, 2)
-			return 'Two of a kind of: ' + str(twos[0]) + ' and: ' + str(twos[1])
+			return [PokerHands.TwoPair, twos]
 	if len(cardDict) == 4: # One pair
 		pair = getNumOfAKind(cardDict, 2)
-		return 'One pair of ' + str(pair)
+		return [PokerHands.Pair, pair]
 
 	return None
 
@@ -130,13 +158,18 @@ def getRank(card):
 
 
 def main():
-	cardD = Card(1, 'diamonds')
+	cardD = Card(1, 'hearts')
 	cardA = Card(1, 'hearts')
-	cardB = Card(2, 'hearts')
-	cardE = Card(4, 'clubs')
-	cardC = Card(4, 'hearts')
+	cardB = Card(11, 'diamonds')
+	cardE = Card(11, 'hearts')
+	cardC = Card(11, 'hearts')
 
 	hand = Hand([cardA, cardB, cardC, cardD, cardE])
-	pokerHand(hand)
+	print('Contains Flush: ' + str(containsFlush(hand)))
+	print('Contains Straight: ' + str(containsStraight(hand)))
+	print('Best pairs: ' + str(getBestAlikeCardHand(hand)))
+	print('High Card: ' + str(getHighCard(hand).rank) + ' of ' + getHighCard(hand).suit)
+
+	print(pokerHand(hand))
 
 main()
