@@ -42,6 +42,7 @@ def compareTwoHands(handA, handB):
 
 
 def tieBreak(handA, handB):
+	"""Breaks ties between hands if they are of the same type"""
 	tiedPokerHand = pokerHand(handA)
 	if tiedPokerHand == PokerHands.RoyalFlush: # Royal Flushes are always ties
 		return None
@@ -66,6 +67,7 @@ def tieBreak(handA, handB):
 
 
 def resolveTwoPair(handA, handB):
+	"""Resolves the comparison of 2 hands if they are both two pair"""
 	cardDictA = getAlikeCards(handA)
 	cardDictB = getAlikeCards(handB)
 	aTwosValue = getNumOfAKind(cardDictA, 2)
@@ -92,6 +94,7 @@ def isLarger(a, b):
 
 
 def resolveFullHouse(handA, handB):
+	"""Resolves the comparison of 2 hands if they are both full houses"""
 	cardDictA = getAlikeCards(handA)
 	cardDictB = getAlikeCards(handB)
 
@@ -106,6 +109,7 @@ def resolveFullHouse(handA, handB):
 
 
 def resolveFlush(handA, handB):
+	"""Resolves the comparison of 2 hands if they are both flushes"""
 	aRanks = getCardRankList(handA)
 	bRanks = getCardRankList(handB)
 
@@ -113,6 +117,7 @@ def resolveFlush(handA, handB):
 
 
 def resolveStraight(handA, handB):
+	"""Resolves the comparison of 2 hands if they are both straights"""
 	aHighCard = getHighCard(handA).rank
 	bHighCard = getHighCard(handB).rank
 
@@ -155,6 +160,7 @@ def resolveKickerCards(aCards, bCards):
 
 
 def resolveHighCard(handA, handB):
+	"""Resolves the comparison of 2 hands if they are both high cards"""
 	aRanks = getCardRankList(handA)
 	bRanks = getCardRankList(handB)
 
@@ -194,6 +200,7 @@ def pokerHand(hand):
 
 
 def isRoyalFlush(hand):
+	"""returns true if the hand is a royal flush"""
 	if not containsFlush(hand) or not containsStraight(hand) or not getHighCard(hand).rank == 1:
 		return False
 	royalFlush = [10, 11, 12, 13, 1]
@@ -204,6 +211,7 @@ def isRoyalFlush(hand):
 
 
 def containsFlush(hand):
+	"""returns true if the hand contains a flush"""
 	suit = hand.cards[0].suit
 	for card in hand.cards:
 		if card.suit != suit:
@@ -213,10 +221,11 @@ def containsFlush(hand):
 
 
 def containsStraight(hand):
+	"""returns true if the hand contains a straight"""
 	cardRanks = getCardRankList(hand)
 	cardRanks.sort()
 	if cardRanks[0] == 1 and cardRanks[1] != 2:
-		cardRanks = cardRanks[1:] + cardRanks[0:1] # if we have an ace, but not a 2, try the ace at the top of the list for 10-ace straights
+		cardRanks = cardRanks[1:] + cardRanks[0:1]  # if we have an ace, but not a 2, try the ace at the top of the list for 10-ace straights
 
 
 	prevRank = cardRanks[0]
@@ -231,6 +240,8 @@ def containsStraight(hand):
 
 
 def getAlikeCards(hand):
+	"""returns dict where keys are unique values in the hand, and values are number of times it appears.
+	e.g. a full house of 2s and 3s would look like: {3:2, 2:3}"""
 	cardRanks = getCardRankList(hand)
 	uniqueCards = list(set(cardRanks))
 
@@ -246,20 +257,20 @@ def getBestAlikeCardHand(hand):
 	"""Gives highest possible combination of pairs, returned as [pokerhand, list or singleton of values]"""
 	cardDict = getAlikeCards(hand)
 	if len(cardDict) == len(hand.cards):
-		return None # This means there are no pairs
-	if len(cardDict) == 2: # Full house or 4 of a kind
+		return None  # This means there are no pairs
+	if len(cardDict) == 2:  # Full house or 4 of a kind
 		fours = getNumOfAKind(cardDict, 4)
 		if fours != None:
 			return PokerHands.FourOfAKind
 		else:
 			return PokerHands.FullHouse
-	if len(cardDict) == 3: # Two pair or 3 of a kind
+	if len(cardDict) == 3:  # Two pair or 3 of a kind
 		threes = getNumOfAKind(cardDict, 3)
 		if threes != None:
 			return PokerHands.ThreeOfAKind
 		else:
 			return PokerHands.TwoPair
-	if len(cardDict) == 4: # One pair
+	if len(cardDict) == 4:  # One pair
 		return PokerHands.Pair
 
 	return None
@@ -280,6 +291,7 @@ def getNumOfAKind(cardDict, num):
 
 
 def getCardRankList(hand):
+	"""Returns list of ranks of all cards in the hand"""
 	cardRanks = []
 	for card in hand.cards:
 		cardRanks.append(card.rank)
@@ -287,6 +299,7 @@ def getCardRankList(hand):
 
 
 def getHighCard(hand):
+	"""Returns highest card in hand(if there is a 1, it is returned)"""
 	highestCard = hand.cards[0]
 	for card in hand.cards:
 		if card.rank == 1:
@@ -297,24 +310,20 @@ def getHighCard(hand):
 	return highestCard
 
 
-def getRank(card):
-	return card.rank
-
-
 def main():
-	cardA = Card(3, 'hearts')
-	cardB = Card(4, 'diamonds')
-	cardC = Card(4, 'hearts')
-	cardD = Card(4, 'hearts')
-	cardE = Card(4, 'hearts')
+	cardA = Card(3, 'diamonds')
+	cardB = Card(3, 'hearts')
+	cardC = Card(5, 'hearts')
+	cardD = Card(2, 'hearts')
+	cardE = Card(7, 'hearts')
 
 	handA = Hand([cardA, cardB, cardC, cardD, cardE])
 
 	cardF = Card(3, 'hearts')
-	cardG = Card(4, 'clubs')
-	cardH = Card(4, 'hearts')
+	cardG = Card(3, 'hearts')
+	cardH = Card(7, 'diamonds')
 	cardI = Card(4, 'hearts')
-	cardJ = Card(4, 'hearts')
+	cardJ = Card(5, 'hearts')
 
 	handB = Hand([cardF, cardG, cardH, cardI, cardJ])
 
