@@ -148,13 +148,10 @@ def resolveKickerCards(aCards, bCards):
 	bCards.sort(reverse=True)
 
 	for i in range(0, len(aCards)):
-		if aCards[i] > bCards[i]:
-			return True
-		if bCards[i] > aCards[i]:
-			return False
+		if isLarger(aCards[i], bCards[i]) != None:
+			return isLarger(aCards[i], bCards[i])
 
 	return None
-
 
 
 def resolveHighCard(handA, handB):
@@ -162,7 +159,6 @@ def resolveHighCard(handA, handB):
 	bRanks = getCardRankList(handB)
 
 	return resolveKickerCards(aRanks, bRanks)
-
 
 
 def pokerHand(hand):
@@ -306,19 +302,19 @@ def getRank(card):
 
 
 def main():
-	cardA = Card(1, 'hearts')
-	cardB = Card(2, 'hearts')
-	cardC = Card(3, 'hearts')
+	cardA = Card(3, 'hearts')
+	cardB = Card(4, 'diamonds')
+	cardC = Card(4, 'hearts')
 	cardD = Card(4, 'hearts')
-	cardE = Card(5, 'hearts')
+	cardE = Card(4, 'hearts')
 
 	handA = Hand([cardA, cardB, cardC, cardD, cardE])
 
-	cardF = Card(5, 'hearts')
+	cardF = Card(3, 'hearts')
 	cardG = Card(4, 'clubs')
-	cardH = Card(3, 'hearts')
-	cardI = Card(2, 'hearts')
-	cardJ = Card(1, 'hearts')
+	cardH = Card(4, 'hearts')
+	cardI = Card(4, 'hearts')
+	cardJ = Card(4, 'hearts')
 
 	handB = Hand([cardF, cardG, cardH, cardI, cardJ])
 
@@ -328,7 +324,7 @@ def main():
 	winner = compareTwoHands(handA, handB)
 	if winner:
 		print('Hand A wins!')
-	elif not winner:
+	elif winner != None: # Need strict comparison because None means a split pot
 		print('Hand B wins!')
 	else:
 		print('The pot is split')
