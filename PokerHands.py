@@ -375,7 +375,7 @@ def main():
     # Player A cards
     cardF = Card(9, 'diamonds')
     cardG = Card(13, 'hearts')
-    
+
     # Player B Cards
     cardH = Card(13, 'spades')
     cardI = Card(1, 'hearts')
