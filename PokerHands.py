@@ -18,6 +18,14 @@ class Hand:
                 return True
         return False
 
+    def handString(self):
+        """returns a string of the hand for easy printing"""
+        returnString = ''
+        for card in self.cards:
+            returnString += '\n'
+            returnString += str(card.rank) + ' of ' + card.suit
+        return returnString
+
 
 class PokerHands(Enum):
     RoyalFlush = 10
@@ -30,6 +38,21 @@ class PokerHands(Enum):
     TwoPair = 3
     Pair = 2
     HighCard = 1
+
+
+def getTexasHoldEmHand(cardA, cardB, hand):
+    """This will return the poker hand given by a texas hold em play of 2 given cards, and 'hand' on the table"""
+    bestHand = Hand([cardA, cardB, hand.cards[0], hand.cards[1], hand.cards[2]])
+    for i in range(0, len(hand.cards)):
+        for j in range(0, len(hand.cards)):
+            for k in range(0, len(hand.cards)):
+                if i == j or i == k or j == k:
+                    continue;
+                newHand = Hand([cardA, cardB, hand.cards[i], hand.cards[j], hand.cards[k]])
+                if compareTwoHands(newHand, bestHand):
+                    bestHand = newHand
+
+    return bestHand
 
 
 def compareTwoHands(handA, handB):
@@ -339,5 +362,21 @@ def main():
     else:
         print('The pot is split')
 
+    print('\n\n')
+
+    cardA = Card(3, 'diamonds')
+    cardB = Card(3, 'hearts')
+    cardC = Card(9, 'hearts')
+    cardD = Card(8, 'hearts')
+    cardE = Card(7, 'hearts')
+
+    cardF = Card(6, 'hearts')
+    cardG = Card(10, 'hearts')
+
+    tableCards = Hand([cardA, cardB, cardC, cardD, cardE])
+
+    bestHand = getTexasHoldEmHand(cardF, cardG, tableCards)
+    print('The best poker hand from these cards is: ' + bestHand.handString())
+    print('which is a: ' + str(pokerHand(bestHand)))
 
 main()
