@@ -23,9 +23,10 @@ def pokerHand(hand):
 			print('Using an illegal card value')
 			return
 
-	print('Contains Flush: ' + str(containsFlush(hand)) + '\n')
+	print('Contains Flush: ' + str(containsFlush(hand)))
 	print('Contains Straight: ' + str(containsStraight(hand)))
 	print('Best pairs: ' + str(getBestAlikeCardHand(hand)))
+	print('High Card: ' + str(getHighCard(hand).rank) + ' of ' + getHighCard(hand).suit)
 
 def containsFlush(hand):
 	suit = hand.cards[0].suit
@@ -113,16 +114,27 @@ def getCardRankList(hand):
 	return cardRanks
 
 
+def getHighCard(hand):
+	highestCard = hand.cards[0]
+	for card in hand.cards:
+		if card.rank == 1:
+			return card
+		if card.rank > highestCard.rank:
+			highestCard = card
+
+	return highestCard
+
+
 def getRank(card):
 	return card.rank
 
 
 def main():
-	cardD = Card(3, 'hearts')
+	cardD = Card(1, 'diamonds')
 	cardA = Card(1, 'hearts')
 	cardB = Card(2, 'hearts')
-	cardE = Card(5, 'hearts')
-	cardC = Card(6, 'hearts')
+	cardE = Card(4, 'clubs')
+	cardC = Card(4, 'hearts')
 
 	hand = Hand([cardA, cardB, cardC, cardD, cardE])
 	pokerHand(hand)
