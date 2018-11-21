@@ -10,6 +10,13 @@ class Hand:
 	def __init__(self, cards):
 		self.cards = cards  # list of cards of type card
 
+	def contains(self, value):
+		"""returns true if this hand contains a card with this number on it"""
+		for card in self.cards:
+			if card.rank == value:
+				return True
+		return False
+
 
 class PokerHands(Enum):
 	RoyalFlush = 10
@@ -26,20 +33,20 @@ class PokerHands(Enum):
 
 def compareTwoHands(handA, handB):
 	"""Returns true if handA wins and false if handB wins. returns None if the pot is split"""
-	if pokerHand(handA) > pokerHand(handB):
+	if pokerHand(handA).value > pokerHand(handB).value:
 		return True
-	if pokerHand(handB) > pokerHand(handA):
-		return True
+	if pokerHand(handB).value > pokerHand(handA).value:
+		return False
 
 	return tieBreak(handA, handB)
 
 
 def tieBreak(handA, handB):
 	tiedPokerHand = pokerHand(handA)
-	if tiedPokerHand == PokerHands.RoyalFlush:
+	if tiedPokerHand == PokerHands.RoyalFlush: # Royal Flushes are always ties
 		return None
 	elif tiedPokerHand == PokerHands.StraightFlush:
-		return resolveStraightFlush(handA, handB)
+		return resolveStraight(handA, handB)
 	elif tiedPokerHand == PokerHands.FourOfAKind:
 		return resolveNOfAKind(handA, handB, 4)
 	elif tiedPokerHand == PokerHands.FullHouse:
@@ -50,10 +57,52 @@ def tieBreak(handA, handB):
 		return resolveStraight(handA, handB)
 	elif tiedPokerHand == PokerHands.ThreeOfAKind:
 		return resolveNOfAKind(handA, handB, 3)
+	elif tiedPokerHand == PokerHands.TwoPair:
+		return resolveTwoPair(handA, handB)
 	elif tiedPokerHand == PokerHands.Pair:
 		return resolveNOfAKind(handA, handB, 2)
 	elif tiedPokerHand == PokerHands.HighCard:
 		return resolveHighCard(handA, handB)
+
+
+def resolveTwoPair(handA, handB):
+	cardDictA = getAlikeCards(handA)
+	cardDictB = getAlikeCards(handB)
+	aTwosValue = getNumOfAKind(cardDictA, 2)
+	bTwosValue = getNumOfAKind(cardDictB, 2)
+	aTwosValue.sort(reverse=True)
+	bTwosValue.sort(reverse=True)
+
+	for i in range(0, len(aTwosValue)):
+		if isLarger(aTwosValue[i], bTwosValue[i]) != None or i == len(aTwosValue):
+			return isLarger(aTwosValue[i], bTwosValue[i])
+
+
+def isLarger(a, b):
+	"""Given 2 ints, return true if a is larger than b if they are 2-13. ones are the highest. return none if the same"""
+	if a > b:
+		if b == 1:
+			return False
+		return True
+	if b > a:
+		if a == 1:
+			return True
+		return False
+	return None
+
+
+def resolveFullHouse(handA, handB):
+	cardDictA = getAlikeCards(handA)
+	cardDictB = getAlikeCards(handB)
+
+	aThreesValue = getNumOfAKind(cardDictA, 3)
+	bThreesValue = getNumOfAKind(cardDictB, 3)
+	aTwosValue = getNumOfAKind(cardDictA, 2)
+	bTwosValue = getNumOfAKind(cardDictB, 2)
+
+	if isLarger(aThreesValue, bThreesValue) != None:
+		return isLarger(aThreesValue, bThreesValue)
+	return isLarger(aTwosValue, bTwosValue)
 
 
 def resolveFlush(handA, handB):
@@ -64,14 +113,15 @@ def resolveFlush(handA, handB):
 
 
 def resolveStraight(handA, handB):
-	aHighCard = getHighCard(handA)
-	bHighCard = getHighCard(handB)
+	aHighCard = getHighCard(handA).rank
+	bHighCard = getHighCard(handB).rank
 
-	if aHighCard > bHighCard:
-		return True
-	if bHighCard > aHighCard:
-		return False
-	return None
+	if aHighCard == 1 and handA.contains(2): # This signifies a straight with a low of an ace
+		aHighCard = 5
+	if bHighCard == 1 and handB.contains(2):
+		bHighCard = 5
+
+	return isLarger(aHighCard, bHighCard)
 
 
 def resolveNOfAKind(handA, handB, n):
@@ -82,10 +132,8 @@ def resolveNOfAKind(handA, handB, n):
 	aPairValue = getNumOfAKind(cardDictA, n)
 	bPairValue = getNumOfAKind(cardDictB, n)
 
-	if aPairValue > bPairValue:
-		return True
-	if bPairValue > aPairValue:
-		return False
+	if isLarger(aPairValue, bPairValue) != None:
+		return isLarger(aPairValue, bPairValue)
 
 	aRanks = getCardRankList(handA)
 	bRanks = getCardRankList(handB)
@@ -131,7 +179,7 @@ def pokerHand(hand):
 			print('Using an illegal card value')
 			return
 
-	if containsStraight(hand) and containsFlush(hand) and getHighCard(hand).rank == 1:
+	if isRoyalFlush(hand):
 		return PokerHands.RoyalFlush
 	elif containsStraight(hand) and containsFlush(hand):
 		return PokerHands.StraightFlush
@@ -147,6 +195,16 @@ def pokerHand(hand):
 		return getBestAlikeCardHand(hand)
 	else:
 		return PokerHands.HighCard
+
+
+def isRoyalFlush(hand):
+	if not containsFlush(hand) or not containsStraight(hand) or not getHighCard(hand).rank == 1:
+		return False
+	royalFlush = [10, 11, 12, 13, 1]
+	for card in hand.cards:
+		if card.rank not in royalFlush:
+			return False
+	return True
 
 
 def containsFlush(hand):
@@ -248,14 +306,31 @@ def getRank(card):
 
 
 def main():
-	cardA = Card(3, 'hearts')
-	cardB = Card(3, 'diamonds')
-	cardC = Card(2, 'hearts')
-	cardD = Card(2, 'hearts')
-	cardE = Card(11, 'hearts')
+	cardA = Card(1, 'hearts')
+	cardB = Card(2, 'hearts')
+	cardC = Card(3, 'hearts')
+	cardD = Card(4, 'hearts')
+	cardE = Card(5, 'hearts')
 
-	hand = Hand([cardA, cardB, cardC, cardD, cardE])
+	handA = Hand([cardA, cardB, cardC, cardD, cardE])
 
-	print(pokerHand(hand))
+	cardF = Card(5, 'hearts')
+	cardG = Card(4, 'clubs')
+	cardH = Card(3, 'hearts')
+	cardI = Card(2, 'hearts')
+	cardJ = Card(1, 'hearts')
+
+	handB = Hand([cardF, cardG, cardH, cardI, cardJ])
+
+	print('Hand A: ' + str(pokerHand(handA)))
+	print('Hand B: ' + str(pokerHand(handB)))
+
+	winner = compareTwoHands(handA, handB)
+	if winner:
+		print('Hand A wins!')
+	elif not winner:
+		print('Hand B wins!')
+	else:
+		print('The pot is split')
 
 main()
