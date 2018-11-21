@@ -47,7 +47,7 @@ def getTexasHoldEmHand(cardA, cardB, hand):
         for j in range(0, len(hand.cards)):
             for k in range(0, len(hand.cards)):
                 if i == j or i == k or j == k:
-                    continue;
+                    continue
                 newHand = Hand([cardA, cardB, hand.cards[i], hand.cards[j], hand.cards[k]])
                 if compareTwoHands(newHand, bestHand):
                     bestHand = newHand
@@ -364,21 +364,21 @@ def main():
 
     print('\n')
 
-    cardA = Card(3, 'diamonds')
-    cardB = Card(3, 'hearts')
-    cardC = Card(2, 'spades')
+    cardA = Card(10, 'diamonds')
+    cardB = Card(11, 'hearts')
+    cardC = Card(12, 'spades')
     cardD = Card(2, 'clubs')
     cardE = Card(7, 'hearts')
 
     tableCards = Hand([cardA, cardB, cardC, cardD, cardE])
 
     # Player A cards
-    cardF = Card(3, 'diamonds')
-    cardG = Card(3, 'hearts')
+    cardF = Card(9, 'diamonds')
+    cardG = Card(13, 'hearts')
+    
     # Player B Cards
-    cardH = Card(3, 'spades')
-    cardI = Card(2, 'hearts')
-
+    cardH = Card(13, 'spades')
+    cardI = Card(1, 'hearts')
 
     playerAHand = getTexasHoldEmHand(cardF, cardG, tableCards)
     playerBHand = getTexasHoldEmHand(cardH, cardI, tableCards)
