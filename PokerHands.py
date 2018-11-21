@@ -362,21 +362,39 @@ def main():
     else:
         print('The pot is split')
 
-    print('\n\n')
+    print('\n')
 
     cardA = Card(3, 'diamonds')
     cardB = Card(3, 'hearts')
-    cardC = Card(9, 'hearts')
-    cardD = Card(8, 'hearts')
+    cardC = Card(2, 'spades')
+    cardD = Card(2, 'clubs')
     cardE = Card(7, 'hearts')
-
-    cardF = Card(6, 'hearts')
-    cardG = Card(10, 'hearts')
 
     tableCards = Hand([cardA, cardB, cardC, cardD, cardE])
 
-    bestHand = getTexasHoldEmHand(cardF, cardG, tableCards)
-    print('The best poker hand from these cards is: ' + bestHand.handString())
-    print('which is a: ' + str(pokerHand(bestHand)))
+    # Player A cards
+    cardF = Card(3, 'diamonds')
+    cardG = Card(3, 'hearts')
+    # Player B Cards
+    cardH = Card(3, 'spades')
+    cardI = Card(2, 'hearts')
+
+
+    playerAHand = getTexasHoldEmHand(cardF, cardG, tableCards)
+    playerBHand = getTexasHoldEmHand(cardH, cardI, tableCards)
+    print('Player As best hand is: ' + playerAHand.handString())
+    print('which is a: ' + str(pokerHand(playerAHand)))
+    print('')
+    print('Player Bs best hand is: ' + playerBHand.handString())
+    print('which is a: ' + str(pokerHand(playerBHand)))
+
+    texasHoldEmWinner = compareTwoHands(playerAHand, playerBHand)
+    if texasHoldEmWinner:
+        print('Hand A wins Texas Holdem!')
+    elif texasHoldEmWinner != None:  # Need strict comparison because None means a split pot
+        print('Hand B wins Texas Holdem!')
+    else:
+        print('The pot is split for Texas Holdem')
+
 
 main()
