@@ -8,6 +8,109 @@ from PokerHands import PokerHands as hands
 
 class PokerTests(unittest.TestCase):
 
+    def getPairHand(self):
+        cardA = Card(3, 'diamonds')
+        cardB = Card(3, 'hearts')
+        cardC = Card(5, 'hearts')
+        cardD = Card(2, 'hearts')
+        cardE = Card(7, 'hearts')
+
+        handA = Hand([cardA, cardB, cardC, cardD, cardE])
+        return handA
+
+    def getHighCardHand(self):
+        cardA = Card(3, 'diamonds')
+        cardB = Card(9, 'hearts')
+        cardC = Card(5, 'hearts')
+        cardD = Card(2, 'hearts')
+        cardE = Card(7, 'hearts')
+
+        handA = Hand([cardA, cardB, cardC, cardD, cardE])
+        return handA
+
+    def getTwoPairHand(self):
+        cardA = Card(3, 'diamonds')
+        cardB = Card(3, 'hearts')
+        cardC = Card(5, 'hearts')
+        cardD = Card(5, 'hearts')
+        cardE = Card(7, 'hearts')
+
+        handA = Hand([cardA, cardB, cardC, cardD, cardE])
+        return handA
+
+
+    def getThreeOfAKindHand(self):
+        cardA = Card(3, 'diamonds')
+        cardB = Card(3, 'hearts')
+        cardC = Card(3, 'hearts')
+        cardD = Card(2, 'hearts')
+        cardE = Card(7, 'hearts')
+
+        handA = Hand([cardA, cardB, cardC, cardD, cardE])
+        return handA
+
+
+    def getStraightHand(self):
+        cardA = Card(2, 'diamonds')
+        cardB = Card(3, 'hearts')
+        cardC = Card(5, 'hearts')
+        cardD = Card(4, 'clubs')
+        cardE = Card(6, 'hearts')
+
+        handA = Hand([cardA, cardB, cardC, cardD, cardE])
+        return handA
+
+    def getFlushHand(self):
+        cardA = Card(3, 'hearts')
+        cardB = Card(6, 'hearts')
+        cardC = Card(5, 'hearts')
+        cardD = Card(2, 'hearts')
+        cardE = Card(7, 'hearts')
+
+        handA = Hand([cardA, cardB, cardC, cardD, cardE])
+        return handA
+
+    def getFullHouseHand(self):
+        cardA = Card(3, 'diamonds')
+        cardB = Card(3, 'hearts')
+        cardC = Card(2, 'hearts')
+        cardD = Card(2, 'clubs')
+        cardE = Card(3, 'hearts')
+
+        handA = Hand([cardA, cardB, cardC, cardD, cardE])
+        return handA
+
+
+    def getFourOfAKindHand(self):
+        cardA = Card(3, 'diamonds')
+        cardB = Card(3, 'hearts')
+        cardC = Card(3, 'hearts')
+        cardD = Card(2, 'clubs')
+        cardE = Card(3, 'hearts')
+
+        handA = Hand([cardA, cardB, cardC, cardD, cardE])
+        return handA
+
+    def getStraightFlush(self):
+        cardA = Card(4, 'hearts')
+        cardB = Card(3, 'hearts')
+        cardC = Card(2, 'hearts')
+        cardD = Card(5, 'hearts')
+        cardE = Card(6, 'hearts')
+
+        handA = Hand([cardA, cardB, cardC, cardD, cardE])
+        return handA
+
+    def getRoyalFlush(self):
+        cardA = Card(10, 'hearts')
+        cardB = Card(11, 'hearts')
+        cardC = Card(12, 'hearts')
+        cardD = Card(13, 'hearts')
+        cardE = Card(1, 'hearts')
+
+        handA = Hand([cardA, cardB, cardC, cardD, cardE])
+        return handA
+
     # ======= Test Creations =======
 
     def testPair(self):
@@ -510,3 +613,48 @@ class PokerTests(unittest.TestCase):
         self.assertIsNone(PokerHands.compareTwoHands(handA, handB))
 
     # ===== Test against other hand types =====
+
+    def testRoyalFlushBeatsAllOthers(self):
+        royalFlush = self.getRoyalFlush()
+        straightFlush = self.getStraightFlush()
+        fourOfAKind = self.getFourOfAKindHand()
+        fullHouse = self.getFullHouseHand()
+        flush = self.getFlushHand()
+        straight = self.getStraightHand()
+        threeOfAKind = self.getThreeOfAKindHand()
+        twoPair = self.getTwoPairHand()
+        pair = self.getPairHand()
+        highCard = self.getHighCardHand()
+
+        self.assertTrue(PokerHands.compareTwoHands(royalFlush, straightFlush))
+        self.assertTrue(PokerHands.compareTwoHands(royalFlush, fourOfAKind))
+        self.assertTrue(PokerHands.compareTwoHands(royalFlush, fullHouse))
+        self.assertTrue(PokerHands.compareTwoHands(royalFlush, flush))
+        self.assertTrue(PokerHands.compareTwoHands(royalFlush, straight))
+        self.assertTrue(PokerHands.compareTwoHands(royalFlush, threeOfAKind))
+        self.assertTrue(PokerHands.compareTwoHands(royalFlush, twoPair))
+        self.assertTrue(PokerHands.compareTwoHands(royalFlush, pair))
+        self.assertTrue(PokerHands.compareTwoHands(royalFlush, highCard))
+
+
+    def testStraightFlushComparisons(self):
+        royalFlush = self.getRoyalFlush()
+        straightFlush = self.getStraightFlush()
+        fourOfAKind = self.getFourOfAKindHand()
+        fullHouse = self.getFullHouseHand()
+        flush = self.getFlushHand()
+        straight = self.getStraightHand()
+        threeOfAKind = self.getThreeOfAKindHand()
+        twoPair = self.getTwoPairHand()
+        pair = self.getPairHand()
+        highCard = self.getHighCardHand()
+
+        self.assertFalse(PokerHands.compareTwoHands(straightFlush, royalFlush))
+        self.assertTrue(PokerHands.compareTwoHands(straightFlush, fourOfAKind))
+        self.assertTrue(PokerHands.compareTwoHands(straightFlush, fullHouse))
+        self.assertTrue(PokerHands.compareTwoHands(straightFlush, flush))
+        self.assertTrue(PokerHands.compareTwoHands(straightFlush, straight))
+        self.assertTrue(PokerHands.compareTwoHands(straightFlush, threeOfAKind))
+        self.assertTrue(PokerHands.compareTwoHands(straightFlush, twoPair))
+        self.assertTrue(PokerHands.compareTwoHands(straightFlush, pair))
+        self.assertTrue(PokerHands.compareTwoHands(straightFlush, highCard))
